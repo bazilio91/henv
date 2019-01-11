@@ -17,9 +17,11 @@ type Config struct {
 	Services map[string]map[string]map[string][]string
 }
 
-var config Config;
+var config Config
+var hosts string
 
-var hosts string;
+const hostsFile = "/etc/hosts"
+
 
 func main() {
 	app := cli.NewApp()
@@ -42,7 +44,7 @@ func main() {
 			hosts = applyService(serviceName, environment, hosts)
 		}
 
-		ioutil.WriteFile("/tmp/hosts", []byte(hosts), 0644)
+		ioutil.WriteFile(hostsFile, []byte(hosts), 0644)
 
 		return nil
 	}
@@ -119,7 +121,7 @@ func loadConfig() Config {
 }
 
 func loadHosts() string {
-	file, err := ioutil.ReadFile("/tmp/hosts")
+	file, err := ioutil.ReadFile(hostsFile)
 
 	if err != nil {
 		panic(err)
