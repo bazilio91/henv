@@ -19,9 +19,9 @@ type Config struct {
 
 var config Config
 var hosts string
+var yamlSource string
 
 const hostsFile = "/etc/hosts"
-
 
 func main() {
 	app := cli.NewApp()
@@ -33,6 +33,10 @@ func main() {
 		environment := c.Args().Get(1)
 
 		services := map[string]bool{}
+
+		if len(service) == 0 {
+			fmt.Printf(yamlSource)
+		}
 
 		if service == "all" {
 			for k := range config.Services {
@@ -88,7 +92,7 @@ func applyService(service string, environment string, hostsContent string) strin
 	hostsContent = strings.TrimRight(hostsContent, "\n")
 
 	if startIndex >= 0 && endIndex >= 0 {
-		fmt.Print("Replacing config")
+		fmt.Printf("Replacing %v config\n", service)
 
 		var re = regexp.MustCompile(startString + `(\s*.*\s*)+` + endString)
 		hostsContent = re.ReplaceAllString(hostsContent, out)
@@ -109,6 +113,8 @@ func loadConfig() Config {
 	if err != nil {
 		panic(err)
 	}
+
+	yamlSource = string(yamlFile)
 
 	var config Config
 
